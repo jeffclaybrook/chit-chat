@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@clerk/nextjs"
 import { fetcher } from "@/utils/fetcher"
 import { getInitials } from "@/utils/get-initials"
