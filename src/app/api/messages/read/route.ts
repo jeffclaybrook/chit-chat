@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { markReadSchema } from "@/lib/validators"
 import { channelForConversation, EVT, pusherServer } from "@/lib/pusher/server"
 
+export const runtime = "nodejs"
+
 export async function POST(req: Request) {
  const { dbUserId } = await requireDbUser()
  const parsed = markReadSchema.safeParse(await req.json())

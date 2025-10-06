@@ -3,6 +3,8 @@ import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
+export const runtime = "nodejs"
+
 type Ctx<T> = {
  params: Promise<T>
 }

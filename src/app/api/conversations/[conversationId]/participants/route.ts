@@ -3,6 +3,8 @@ import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { modifyParticipantsSchema } from "@/lib/validators"
 
+export const runtime = "nodejs"
+
 type Ctx<T> = {
  params: Promise<T>
 }

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { createDirectConversationSchema, createGroupConversationSchema, listConversationsSchema } from "@/lib/validators"
 import { channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
+export const runtime = "nodejs"
+
 export async function GET(req: Request) {
  const { dbUserId } = await requireDbUser()
  const url = new URL(req.url)

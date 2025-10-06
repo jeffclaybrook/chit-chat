@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { updateConversationSchema } from "@/lib/validators"
 import { channelForConversation, channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
+export const runtime = "nodejs"
+
 type Ctx<T> = {
  params: Promise<T>
 }

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma"
 import { listMessagesSchema, sendMessageSchema } from "@/lib/validators"
 import { channelForConversation, EVT, pusherServer } from "@/lib/pusher/server"
 
+export const runtime = "nodejs"
+
 function cursorTuple(
  createdAt: Date,
  id: string
