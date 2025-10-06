@@ -147,7 +147,7 @@ export function ConversationsSidebar({
    false
   )
 
-  router.push(`/conversation/${id}`)
+  router.push(`/conversations/${id}`)
  }
 
  const items = data ?? []
