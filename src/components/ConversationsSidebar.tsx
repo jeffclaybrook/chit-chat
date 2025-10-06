@@ -171,7 +171,7 @@ export function ConversationsSidebar({
  return (
   <>
    <Sidebar collapsible="offcanvas">
-    <SidebarHeader className="py-4">
+    <SidebarHeader>
      <StartChatDialog />
     </SidebarHeader>
     <SidebarContent>
@@ -203,7 +203,7 @@ export function ConversationsSidebar({
             <SidebarMenuButton
              onClick={() => openConversation(c.id)}
              className={cn(
-              "justify-start gap-3",
+              "justify-start gap-3 cursor-pointer h-12 group-has-data-[sidebar=menu-action]/menu-item:pr-2",
               selectedId === c.id && "bg-accent"
              )}
             >
@@ -216,19 +216,19 @@ export function ConversationsSidebar({
              </Avatar>
              <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-               <div className={cn("truncate", c.isUnread ? "font-bold" : "font-medium")}>{title}</div>
-               <div className="text-xs text-muted-foreground shrink-0">{formatDate(stamp)}</div>
+               <div className={cn("text-start truncate", c.isUnread ? "font-bold" : "font-medium")}>{title}</div>
+               <div className="text-xs text-end text-muted-foreground shrink-0">{formatDate(stamp)}</div>
               </div>
               <div className="flex items-center justify-between gap-2">
                <div className="flex items-center gap-1 truncate text-sm text-muted-foreground">
                 {c.lastMessage?.hasImage && <ImageIcon className="h-3.5 w-3.5" />}
-                <span className={cn("truncate", c.isUnread ? "font-bold" : "font-medium")}>{preview}</span>
+                <span className={cn("text-start truncate", c.isUnread ? "font-bold" : "font-medium")}>{preview}</span>
                </div>
                <div className="opacity-0 transition-opacity group-hover:opacity-100">
                 <DropdownMenu>
                  <DropdownMenuTrigger asChild>
                   <SidebarMenuAction className="hover:bg-transparent focus-visible:ring-0">
-                   <MoreIcon className="size-4" />
+                   <MoreIcon className="size-6" />
                   </SidebarMenuAction>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end">
@@ -250,10 +250,11 @@ export function ConversationsSidebar({
                     <AlertDialogTrigger asChild>
                      <Button
                       type="button"
+                      variant="ghost"
                       aria-label="Delete conversation"
-                      className="justify-start w-full text-base px-2 has-[>svg]:px-2 rounded-sm"
+                      className="justify-start w-full rounded-sm px-2 py-1.5 text-sm px-2 has-[>svg]:px-2 rounded-sm"
                      >
-                      <DeleteIcon className="size-4 mr-2" />
+                      <DeleteIcon className="size-4" />
                       Delete
                      </Button>
                     </AlertDialogTrigger>

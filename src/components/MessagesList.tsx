@@ -137,7 +137,7 @@ export function MessagesList({
     <div className="px-3 py-4 space-y-6">
      {groups.map((g) => (
       <div key={g.label} className="space-y-2">
-       <div className="flex justify-center sticky top-10 z-10">
+       <div className="flex justify-center sticky top-8 z-10">
         <span className="text-xs text-muted-foreground rounded-full bg-muted px-3 py-0.5">{g.label}</span>
        </div>
        <div className="space-y-3">
@@ -146,7 +146,7 @@ export function MessagesList({
          const author = m.author
 
          return (
-          <div key={m.id} className={cn("flex items-end", mine ? "justify-end" : "justify-start")}>
+          <div key={m.id} className={cn("flex items-center", mine ? "justify-end" : "justify-start")}>
            {!mine && (
             <div className="hidden md:block mr-2">
              <Avatar className="h-7 w-7">
@@ -164,7 +164,7 @@ export function MessagesList({
             )}
             <div
              className={[
-              "rounded-2xl px-3 py-2 whitespace-pre-wrap break-words",
+              "rounded-full px-3 py-2 whitespace-pre-wrap break-words",
               mine ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
               m.attachments.length ? "p-1" : ""
              ].join(" ")}

@@ -139,8 +139,8 @@ export function ChatInput({
 
  return (
   <div className="sticky bottom-0 z-20 border-t bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-   <div className="max-w-3xl px-3 py-2 mx-auto">
-    <div className="flex items-end gap-2">
+   <div className="w-full px-3 py-2">
+    <div className="flex items-center justify-between gap-2">
      <div className="relative flex-1">
       <Textarea
        ref={textareaRef}
@@ -155,8 +155,9 @@ export function ChatInput({
        aria-label="Attach image"
        onClick={() => fileRef.current?.click()}
        title="Attach image"
+       className="absolute top-1/2 -translate-y-1/2 right-2"
       >
-       <AttachIcon className="size-4" />
+       <AttachIcon className="size-6" />
       </button>
       <input
        ref={fileRef}
@@ -173,7 +174,7 @@ export function ChatInput({
       onClick={sendText}
       disabled={sending || uploading || !value.trim()}
      >
-      <SendIcon className="size-4" />
+      <SendIcon className="size-6" />
      </Button>
     </div>
     {(sending || uploading) && <div className="text-xs text-muted-foreground mt-1">{uploading ? "Uploading..." : "Sending..."}</div>}
