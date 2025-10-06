@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Attachment {
+  id             String        @id @default(cuid())
+  messageId      String?
+  conversationId String?
+  uploaderId     String?
+  publicId       String
+  secureUrl      String
+  width          Int?
+  height         Int?
+  bytes          Int?
+  format         String?
+  createdAt      DateTime      @default(now())
+  message        Message?      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  uploader       User?         @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([messageId])
+  @@index([conversationId])
+  @@index([publicId])
+}
+
+model Conversation {
+  id            String           @id @default(cuid())
+  type          ConversationType @default(DIRECT)
+  title         String?
+  avatarUrl     String?
+  createdById   String?
+  createdBy     User?            @relation("ConversationCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  pusherChannel String?          @unique
+  lastMessageAt DateTime?        @default(now())
+  pairKey       String?          @unique
+  isArchived    Boolean          @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  participants  Participant[]
+  messages      Message[]
+  attachments   Attachment[]
+
+  @@index([type])
+  @@index([lastMessageAt])
+  @@index([pairKey])
+}
+
+model Message {
+  id             String               @id @default(cuid())
+  conversationId String
+  authorId       String
+  type           MessageType          @default(TEXT)
+  body           String?
+  hasImage       Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  deletedAt      DateTime?
+  conversation   Conversation         @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author         User                 @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  participant    Participant[]
+  attachments    Attachment[]
+  readReceipts   MessageReadReceipt[]
+
+  @@unique([createdAt, id])
+  @@index([conversationId, createdAt, id])
+  @@index([authorId])
+  @@index([deletedAt])
+}
+
+model MessageReadReceipt {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  seenAt    DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@index([userId, seenAt])
+}
+
+model Participant {
+  id                String       @id @default(cuid())
+  conversationId    String
+  userId            String
+  role              String?
+  joinedAt          DateTime     @default(now())
+  mutedUntil        DateTime?
+  deletedAt         DateTime?
+  archivedAt        DateTime?
+  lastSeenMessageId String?
+  lastSeenAt        DateTime?
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastSeenMessage   Message?     @relation(fields: [lastSeenMessageId], references: [id])
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId, deletedAt])
+}
+
+model User {
+  id            String               @id @default(cuid())
+  clerkUserId   String               @unique
+  email         String               @unique
+  firstName     String?
+  lastName      String?
+  imageUrl      String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  conversations Participant[]
+  messages      Message[]            @relation("MessageAuthor")
+  readReceipts  MessageReadReceipt[]
+  attachments   Attachment[]
+  createdGroups Conversation[]       @relation("ConversationCreator")
+
+  @@index([clerkUserId])
+  @@index([email])
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
