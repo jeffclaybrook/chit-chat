@@ -18,7 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Button } from "./ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem, useSidebar } from "./ui/sidebar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "./ui/sidebar"
 import { ArchivedConversations } from "./ArchivedConversations"
 import { ArchiveIcon, ChevronsUpDownIcon, DeleteIcon, ImageIcon, MailIcon, MonitorIcon, MoonIcon, MoreIcon, MuteIcon, SunIcon } from "./Icons"
 import { StartChatDialog } from "./StartChatDialog"
@@ -227,9 +227,15 @@ export function ConversationsSidebar({
                <div className="opacity-0 transition-opacity group-hover:opacity-100">
                 <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction className="hover:bg-transparent focus-visible:ring-0">
+                  <Button
+                   type="button"
+                   variant="ghost"
+                   size="icon"
+                   aria-label="More"
+                   className="hover:bg-transparent focus-visible:ring-0"
+                  >
                    <MoreIcon className="size-6" />
-                  </SidebarMenuAction>
+                  </Button>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => (onArchive ?? archiveConversation)(c.id)}>

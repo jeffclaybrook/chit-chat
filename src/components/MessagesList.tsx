@@ -146,10 +146,10 @@ export function MessagesList({
          const author = m.author
 
          return (
-          <div key={m.id} className={cn("flex items-center", mine ? "justify-end" : "justify-start")}>
+          <div key={m.id} className={cn("flex items-start", mine ? "justify-end" : "justify-start")}>
            {!mine && (
             <div className="hidden md:block mr-2">
-             <Avatar className="h-7 w-7">
+             <Avatar className="h-8 w-8">
               {author.imageUrl ? (
                <AvatarImage src={author.imageUrl} alt="Author" />
               ) : (
@@ -164,7 +164,7 @@ export function MessagesList({
             )}
             <div
              className={[
-              "rounded-full px-3 py-2 whitespace-pre-wrap break-words",
+              "rounded-full px-3 py-1 whitespace-pre-wrap break-words",
               mine ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
               m.attachments.length ? "p-1" : ""
              ].join(" ")}
