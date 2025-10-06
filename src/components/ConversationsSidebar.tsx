@@ -230,11 +230,11 @@ export function ConversationsSidebar({
                   <Button
                    type="button"
                    variant="ghost"
-                   size="icon"
+                   size="icon-sm"
                    aria-label="More"
                    className="hover:bg-transparent focus-visible:ring-0"
                   >
-                   <MoreIcon className="size-6" />
+                   <MoreIcon className="size-5" />
                   </Button>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end">
