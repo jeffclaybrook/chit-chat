@@ -203,7 +203,7 @@ export function ConversationsSidebar({
             <SidebarMenuButton
              onClick={() => openConversation(c.id)}
              className={cn(
-              "justify-start gap-3 cursor-pointer h-12 group-has-data-[sidebar=menu-action]/menu-item:pr-2",
+              "items-center justify-start gap-3 cursor-pointer h-12 group-has-data-[sidebar=menu-action]/menu-item:pr-2",
               selectedId === c.id && "bg-accent"
              )}
             >
@@ -227,15 +227,7 @@ export function ConversationsSidebar({
                <div className="opacity-0 transition-opacity group-hover:opacity-100">
                 <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                  <Button
-                   type="button"
-                   variant="ghost"
-                   size="icon-sm"
-                   aria-label="More"
-                   className="hover:bg-transparent focus-visible:ring-0"
-                  >
-                   <MoreIcon className="size-5" />
-                  </Button>
+                  <MoreIcon className="size-5" />
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => (onArchive ?? archiveConversation)(c.id)}>
@@ -258,9 +250,9 @@ export function ConversationsSidebar({
                       type="button"
                       variant="ghost"
                       aria-label="Delete conversation"
-                      className="justify-start w-full rounded-sm px-2 py-1.5 text-sm px-2 has-[>svg]:px-2 rounded-sm"
+                      className="justify-start w-full rounded-sm py-1.5 h-auto text-sm px-2 has-[>svg]:px-2"
                      >
-                      <DeleteIcon className="size-4" />
+                      <DeleteIcon className="size-4 text-muted-foreground" />
                       Delete
                      </Button>
                     </AlertDialogTrigger>
