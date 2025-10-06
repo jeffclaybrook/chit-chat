@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 export async function GET(_req: NextRequest) {
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
  const rows = await prisma.participant.findMany({
   where: {
-   userId,
+   userId: dbUserId,
    deletedAt: null,
    archivedAt: {
     not: null
@@ -79,7 +79,7 @@ export async function GET(_req: NextRequest) {
      conversationId: conversation.id,
      deletedAt: null,
      authorId: {
-      not: userId
+      not: dbUserId
      },
      ...(since ? { createdAt: { gt: since } } : {})
     }

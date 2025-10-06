@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { listMessagesSchema, sendMessageSchema } from "@/lib/validators"
 import { channelForConversation, EVT, pusherServer } from "@/lib/pusher/server"
@@ -13,7 +13,7 @@ function cursorTuple(
 }
 
 export async function GET(req: Request) {
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
  const url = new URL(req.url)
 
  const parsed = listMessagesSchema.safeParse({
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   }
  })
@@ -101,7 +101,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
  const parsed = sendMessageSchema.safeParse(await req.json())
 
  if (!parsed.success) {
@@ -121,7 +121,7 @@ export async function POST(req: Request) {
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   include: {
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
   const message = await tx.message.create({
    data: {
     conversationId,
-    authorId: userId,
+    authorId: dbUserId,
     type,
     body: body ?? null,
     hasImage: (attachments?.length ?? 0) > 0
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
     data: attachments.map((a) => ({
      messageId: message.id,
      conversationId,
-     uploaderId: userId,
+     uploaderId: dbUserId,
      publicId: a.publicId,
      secureUrl: a.secureUrl,
      width: a.width,
@@ -171,12 +171,12 @@ export async function POST(req: Request) {
    where: {
     messageId_userId: {
      messageId: message.id,
-     userId
+     userId: dbUserId
     }
    },
    create: {
     messageId: message.id,
-    userId
+    userId: dbUserId
    },
    update: {
     seenAt: new Date()

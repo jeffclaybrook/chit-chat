@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { channelForConversation, channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
@@ -12,13 +12,13 @@ export async function POST(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
  const participant = await prisma.participant.findUnique({
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   include: {
@@ -43,7 +43,7 @@ export async function POST(
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   data: {
@@ -52,7 +52,7 @@ export async function POST(
   }
  })
 
- await pusherServer.trigger(channelForConversation(conversationId), EVT.PARTICIPANT_REMOVED, { userId })
+ await pusherServer.trigger(channelForConversation(conversationId), EVT.PARTICIPANT_REMOVED, { dbUserId })
  await Promise.all(
   participant.conversation.participants.map((p) =>
    pusherServer.trigger(channelForUser(p.userId), EVT.CONVERSATION_UPDATED, { conversationId })

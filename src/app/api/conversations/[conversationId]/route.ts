@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { updateConversationSchema } from "@/lib/validators"
 import { channelForConversation, channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
@@ -42,9 +42,9 @@ export async function GET(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
- await ensureMember(conversationId, userId)
+ await ensureMember(conversationId, dbUserId)
 
  const conversation = await prisma.conversation.findUnique({
   where: {
@@ -82,8 +82,8 @@ export async function PATCH(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
- const member = await ensureMember(conversationId, userId)
+ const { dbUserId } = await requireDbUser()
+ const member = await ensureMember(conversationId, dbUserId)
  const payload = await req.json()
  const parsed = updateConversationSchema.safeParse(payload)
 
@@ -130,13 +130,13 @@ export async function DELETE(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
  const participant = await prisma.participant.findUnique({
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   include: {

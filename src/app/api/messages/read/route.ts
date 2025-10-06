@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { markReadSchema } from "@/lib/validators"
 import { channelForConversation, EVT, pusherServer } from "@/lib/pusher/server"
 
 export async function POST(req: Request) {
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
  const parsed = markReadSchema.safeParse(await req.json())
 
  if (!parsed.success) {
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   }
  })
@@ -32,12 +32,12 @@ export async function POST(req: Request) {
    where: {
     messageId_userId: {
      messageId,
-     userId
+     userId: dbUserId
     }
    },
    create: {
     messageId,
-    userId
+    userId: dbUserId
    },
    update: {
     seenAt: new Date()
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
    where: {
     conversationId_userId: {
      conversationId,
-     userId
+     userId: dbUserId
     }
    },
    data: {
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
 
  await pusherServer.trigger(channelForConversation(conversationId), EVT.MESSAGE_READ, {
   messageId,
-  userId,
+  dbUserId,
   seenAt: new Date().toISOString()
  })
 

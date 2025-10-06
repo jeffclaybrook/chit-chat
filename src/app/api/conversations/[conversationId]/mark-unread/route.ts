@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 type Ctx<T> = {
@@ -11,13 +11,13 @@ export async function POST(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
  const member = await prisma.participant.findUnique({
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   select: {
@@ -53,7 +53,7 @@ export async function POST(
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   data: {

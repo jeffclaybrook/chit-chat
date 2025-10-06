@@ -28,7 +28,7 @@ export function StartChatDialog({ onCreated }: StartChatDialogProps) {
  const [groupTitle, setGroupTitle] = useState<string>("")
  const [error, setError] = useState<string | null>(null)
  const [selected, setSelected] = useState<Set<string>>(new Set())
- const { userId } = useAuth()
+ const { userId: clerkId } = useAuth()
  const { mutate } = useSWRConfig()
  const router = useRouter()
 
@@ -37,7 +37,7 @@ export function StartChatDialog({ onCreated }: StartChatDialogProps) {
   { revalidateOnFocus: false }
  )
 
- const filtered = (users ?? []).filter((user) => user.id !== userId)
+ const filtered = (users ?? []).filter(user => user.clerkUserId !== clerkId)
  const isGroup = selected.size > 1
 
  const toggleSelected = (id: string) => {

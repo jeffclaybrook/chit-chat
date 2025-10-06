@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { modifyParticipantsSchema } from "@/lib/validators"
 
@@ -12,7 +12,7 @@ export async function POST(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
  const conversation = await prisma.conversation.findUnique({
   where: {
@@ -32,7 +32,7 @@ export async function POST(
   where: {
    conversationId_userId: {
     conversationId: conversation.id,
-    userId
+    userId: dbUserId
    }
   }
  })

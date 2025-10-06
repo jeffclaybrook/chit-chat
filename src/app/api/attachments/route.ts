@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { cloudinarySignatureSchema } from "@/lib/validators"
 import crypto from "crypto"
 
@@ -28,7 +28,7 @@ function sign(params: Record<string, string | number | undefined>) {
 }
 
 export async function POST(req: Request) {
- await requireUserId()
+ await requireDbUser()
 
  const parsed = cloudinarySignatureSchema.safeParse(await req.json())
 

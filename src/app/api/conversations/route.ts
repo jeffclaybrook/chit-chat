@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { createDirectConversationSchema, createGroupConversationSchema, listConversationsSchema } from "@/lib/validators"
 import { channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
 export async function GET(req: Request) {
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
  const url = new URL(req.url)
  const parsed = listConversationsSchema.safeParse({ q: url.searchParams.get("q") ?? undefined})
 
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
  const baseConvos = await prisma.participant.findMany({
   where: {
-   userId,
+   userId: dbUserId,
    deletedAt: null,
    archivedAt: null,
    conversation: {
@@ -100,7 +100,7 @@ export async function GET(req: Request) {
      conversationId: conversation.id,
      deletedAt: null,
      authorId: {
-      not: userId
+      not: dbUserId
      },
      ...(since ? { createdAt: { gt: since } } : {})
     }
@@ -120,7 +120,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
- const userId = await requireUserId()
+ const { dbUserId} = await requireDbUser()
  const body = await req.json()
  const directParsed = createDirectConversationSchema.safeParse(body)
  const groupParsed = createGroupConversationSchema.safeParse(body)
@@ -128,11 +128,24 @@ export async function POST(req: Request) {
  if (directParsed.success) {
   const { otherUserId } = directParsed.data
 
-  if (otherUserId === userId) {
+  if (otherUserId === dbUserId) {
    return NextResponse.json({ error: "Cannot message yourself" }, { status: 400 })
   }
 
-  const [a, b] = [userId, otherUserId].sort()
+  const other = await prisma.user.findUnique({
+   where: {
+    id: otherUserId
+   },
+   select: {
+    id: true
+   }
+  })
+
+  if (!other) {
+   return NextResponse.json({ error: "User not found" }, { status: 404 })
+  }
+
+  const [a, b] = [dbUserId, otherUserId].sort()
   const pairKey = `${a}|${b}`
 
   const conversation = await prisma.conversation.upsert({
@@ -175,14 +188,14 @@ export async function POST(req: Request) {
 
  if (groupParsed.success) {
   const { title, avatarUrl, participantIds } = groupParsed.data
-  const uniqueIds = Array.from(new Set([userId, ...participantIds]))
+  const uniqueIds = Array.from(new Set([dbUserId, ...participantIds]))
 
   const conversation = await prisma.conversation.create({
    data: {
     type: "GROUP",
     title,
     avatarUrl: avatarUrl ?? undefined,
-    createdById: userId,
+    createdById: dbUserId,
     participants: {
      create: uniqueIds.map((id) => ({ userId: id }))
     }

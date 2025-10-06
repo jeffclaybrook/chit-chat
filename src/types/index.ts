@@ -2,6 +2,7 @@ export type ConversationType = "DIRECT" | "GROUP"
 
 export type UserLite = {
  id: string
+ clerkUserId?: string | null
  firstName: string | null
  lastName: string | null
  imageUrl: string | null

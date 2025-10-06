@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { requireUserId } from "@/lib/auth"
+import { requireDbUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { channelForUser, EVT, pusherServer } from "@/lib/pusher/server"
 
@@ -35,15 +35,15 @@ export async function POST(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
- await ensureMember(conversationId, userId)
+ await ensureMember(conversationId, dbUserId)
 
  await prisma.participant.update({
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   data: {
@@ -51,7 +51,7 @@ export async function POST(
   }
  })
 
- await pusherServer.trigger(channelForUser(userId), EVT.CONVERSATION_UPDATED, { conversationId })
+ await pusherServer.trigger(channelForUser(dbUserId), EVT.CONVERSATION_UPDATED, { conversationId })
 
  return NextResponse.json({ ok: true })
 }
@@ -61,15 +61,15 @@ export async function DELETE(
  ctx: Ctx<{ conversationId: string }>
 ) {
  const { conversationId } = await ctx.params
- const userId = await requireUserId()
+ const { dbUserId } = await requireDbUser()
 
- await ensureMember(conversationId, userId)
+ await ensureMember(conversationId, dbUserId)
 
  await prisma.participant.update({
   where: {
    conversationId_userId: {
     conversationId,
-    userId
+    userId: dbUserId
    }
   },
   data: {
@@ -77,7 +77,7 @@ export async function DELETE(
   }
  })
 
- await pusherServer.trigger(channelForUser(userId), EVT.CONVERSATION_UPDATED, { conversationId })
+ await pusherServer.trigger(channelForUser(dbUserId), EVT.CONVERSATION_UPDATED, { conversationId })
 
  return NextResponse.json({ ok: true })
 }
